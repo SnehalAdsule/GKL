@@ -18,7 +18,6 @@
 
 bool g_use_double;
 int g_max_threads;
-bool g_use_fpga;
 
 Context<float> g_ctxf;
 Context<double> g_ctxd;
@@ -33,7 +32,7 @@ double (*g_compute_full_prob_double)(testcase *tc);
  */
 JNIEXPORT void JNICALL Java_com_intel_gkl_pairhmm_IntelPairHmm_initNative
 (JNIEnv* env, jclass cls, jclass readDataHolder, jclass haplotypeDataHolder,
- jboolean use_double, jint max_threads, jboolean use_fpga)
+ jboolean use_double, jint max_threads)
 {
   DBG("Enter");
 
@@ -61,7 +60,6 @@ JNIEXPORT void JNICALL Java_com_intel_gkl_pairhmm_IntelPairHmm_initNative
   }
 #endif
 
-  g_use_fpga = use_fpga;
 
   // enable FTZ
   if (_MM_GET_FLUSH_ZERO_MODE() != _MM_FLUSH_ZERO_ON) {
@@ -112,7 +110,7 @@ JNIEXPORT void JNICALL Java_com_intel_gkl_pairhmm_IntelPairHmm_computeLikelihood
   // calcutate pairHMM
   shacc_pairhmm::Batch batch;
   bool batch_valid = false;
-  if (g_use_fpga && !g_use_double) {
+  if (false && !g_use_double) {
     batch = javaData.getBatch();
     batch_valid = shacc_pairhmm::calculate(batch);
   }
