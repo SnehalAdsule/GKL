@@ -66,6 +66,11 @@ public class IntelPairHmm implements PairHMMNativeBinding {
             args.useDoublePrecision = false;
             args.maxNumberOfThreads = 1;
         }
+        
+	if (useFpga) {
+            logger.info("PairHMM does not support FPGA Implementation. Using AVX PairHMM");
+        }
+
 
         if(!useFpga && gklUtils.isAvx512Supported()) {
             logger.info("Using CPU-supported AVX-512 instructions");
@@ -79,7 +84,7 @@ public class IntelPairHmm implements PairHMMNativeBinding {
             logger.info("Flush-to-zero (FTZ) is enabled when running PairHMM");
         }
 
-        initNative(ReadDataHolder.class, HaplotypeDataHolder.class, args.useDoublePrecision, args.maxNumberOfThreads, useFpga);
+        initNative(ReadDataHolder.class, HaplotypeDataHolder.class, args.useDoublePrecision, args.maxNumberOfThreads);
 
         // log information about threads
         int reqThreads = args.maxNumberOfThreads;
@@ -127,8 +132,7 @@ public class IntelPairHmm implements PairHMMNativeBinding {
     private native static void initNative(Class<?> readDataHolderClass,
                                           Class<?> haplotypeDataHolderClass,
                                           boolean doublePrecision,
-                                          int maxThreads,
-                                          boolean useFpga);
+                                          int maxThreads);
 
     private native void computeLikelihoodsNative(Object[] readDataArray,
                                                  Object[] haplotypeDataArray,
