@@ -38,9 +38,9 @@ endif()
 #---------------------------------------------------------------------
 # pairhmm_shacc (stub version)
 #---------------------------------------------------------------------
-#set(TARGET gkl_pairhmm_shacc)
-#add_library(${TARGET} SHARED shacc_pairhmm_stub.cc)
-#install(TARGETS ${TARGET} DESTINATION ${CMAKE_BINARY_DIR})
+set(TARGET gkl_pairhmm_shacc)
+add_library(${TARGET} SHARED shacc_pairhmm_stub.cc)
+install(TARGETS ${TARGET} DESTINATION ${CMAKE_BINARY_DIR})
 
 #---------------------------------------------------------------------
 # pairhmm_fpga
