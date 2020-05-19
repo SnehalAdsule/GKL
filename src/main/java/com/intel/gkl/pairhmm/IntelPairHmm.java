@@ -66,13 +66,8 @@ public class IntelPairHmm implements PairHMMNativeBinding {
             args.useDoublePrecision = false;
             args.maxNumberOfThreads = 1;
         }
-        
-	if (useFpga) {
-            logger.info("PairHMM does not support FPGA Implementation. Using AVX PairHMM");
-        }
 
-
-        if(!useFpga && gklUtils.isAvx512Supported()) {
+        if(gklUtils.isAvx512Supported()) {
             logger.info("Using CPU-supported AVX-512 instructions");
         }
 
