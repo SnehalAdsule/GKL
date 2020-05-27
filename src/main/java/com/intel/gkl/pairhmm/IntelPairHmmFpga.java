@@ -12,7 +12,7 @@ public final class IntelPairHmmFpga extends IntelPairHmm {
 
     public IntelPairHmmFpga() {
 	     // setNativeLibraryName(NATIVE_LIBRARY_NAME);
-        	useFpga = true;
+        	useFpga = false;
    	    	logger.warn("PairHMM does not support FPGA Implementation. Please use AVX PairHMM");
 
     }

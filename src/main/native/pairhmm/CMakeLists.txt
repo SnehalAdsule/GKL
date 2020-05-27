@@ -34,18 +34,3 @@ if(OPENMP_FOUND)
   target_link_libraries(${TARGET} ${OpenMP_CXX_FLAGS})
   install(TARGETS ${TARGET} DESTINATION ${CMAKE_BINARY_DIR})
 endif()
-
-#---------------------------------------------------------------------
-# pairhmm_shacc (stub version)
-#---------------------------------------------------------------------
-set(TARGET gkl_pairhmm_shacc)
-add_library(${TARGET} SHARED shacc_pairhmm_stub.cc)
-install(TARGETS ${TARGET} DESTINATION ${CMAKE_BINARY_DIR})
-
-#---------------------------------------------------------------------
-# pairhmm_fpga
-#---------------------------------------------------------------------
-#set(TARGET gkl_pairhmm_fpga)
-#add_library(${TARGET} SHARED IntelPairHmm.cc avx_impl.cc avx512_impl.cc pairhmm_common.cc)
-#target_link_libraries(${TARGET} gkl_pairhmm_shacc)
-#install(TARGETS ${TARGET} DESTINATION ${CMAKE_BINARY_DIR})

@@ -109,11 +109,7 @@ JNIEXPORT void JNICALL Java_com_intel_gkl_pairhmm_IntelPairHmm_computeLikelihood
   //==================================================================
   // calcutate pairHMM
   shacc_pairhmm::Batch batch;
-  bool batch_valid = false;
-  if (false && !g_use_double) {
-    batch = javaData.getBatch();
-    batch_valid = shacc_pairhmm::calculate(batch);
-  }
+  batch = javaData.getBatch();
 
 #ifdef _OPENMP
   #pragma omp parallel for schedule(dynamic, 1) num_threads(g_max_threads)
@@ -121,8 +117,7 @@ JNIEXPORT void JNICALL Java_com_intel_gkl_pairhmm_IntelPairHmm_computeLikelihood
   for (int i = 0; i < testcases.size(); i++) {
     double result_final = 0;
 
-    float result_float = g_use_double ? 0.0f : 
-      batch_valid ? batch.results[i] : g_compute_full_prob_float(&testcases[i]);
+    float result_float = g_use_double ? 0.0f : g_compute_full_prob_float(&testcases[i]);
 
     if (result_float < MIN_ACCEPTED) {
       double result_double = g_compute_full_prob_double(&testcases[i]);
