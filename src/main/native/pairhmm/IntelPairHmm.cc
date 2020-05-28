@@ -13,7 +13,6 @@
   #include "avx512_impl.h"
 #endif
 #include "Context.h"
-#include "shacc_pairhmm.h"
 #include "JavaData.h"
 
 bool g_use_double;
@@ -108,8 +107,6 @@ JNIEXPORT void JNICALL Java_com_intel_gkl_pairhmm_IntelPairHmm_computeLikelihood
   
   //==================================================================
   // calcutate pairHMM
-  shacc_pairhmm::Batch batch;
-  batch = javaData.getBatch();
 
 #ifdef _OPENMP
   #pragma omp parallel for schedule(dynamic, 1) num_threads(g_max_threads)

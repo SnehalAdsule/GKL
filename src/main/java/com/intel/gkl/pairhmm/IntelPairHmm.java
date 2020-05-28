@@ -20,7 +20,6 @@ public class IntelPairHmm implements PairHMMNativeBinding {
     private static final String NATIVE_LIBRARY_NAME = "gkl_pairhmm";
     private String nativeLibraryName = "gkl_pairhmm";
     private IntelGKLUtils gklUtils = new IntelGKLUtils();
-    boolean useFpga = false;
     boolean useOmp = false;
 
     void setNativeLibraryName(String nativeLibraryName) {
@@ -69,10 +68,6 @@ public class IntelPairHmm implements PairHMMNativeBinding {
 
         if(gklUtils.isAvx512Supported()) {
             logger.info("Using CPU-supported AVX-512 instructions");
-        }
-
-        if (args.useDoublePrecision && useFpga) {
-            logger.warn("FPGA PairHMM does not support double precision floating-point. Using AVX PairHMM");
         }
 
         if(!gklUtils.getFlushToZero()) {

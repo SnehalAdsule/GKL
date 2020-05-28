@@ -17,9 +17,6 @@ include_directories(../common)
 #---------------------------------------------------------------------
 set(TARGET gkl_pairhmm)
 add_library(${TARGET} SHARED IntelPairHmm.cc avx_impl.cc avx512_impl.cc pairhmm_common.cc)
-if (APPLE)
-  target_link_libraries(${TARGET} gkl_pairhmm_shacc)
-endif()
 install(TARGETS ${TARGET} DESTINATION ${CMAKE_BINARY_DIR})
 
 #---------------------------------------------------------------------
