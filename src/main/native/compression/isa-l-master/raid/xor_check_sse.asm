@@ -137,7 +137,7 @@
 section .text
 
 align 16
-mk_global  xor_check_sse, function
+global xor_check_sse:function
 func(xor_check_sse)
 	FUNC_SAVE
 %ifidn PS,8				;64-bit code

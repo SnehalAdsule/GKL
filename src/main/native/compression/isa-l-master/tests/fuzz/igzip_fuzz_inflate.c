@@ -1,6 +1,5 @@
 #define _FILE_OFFSET_BITS 64
 #include <stdio.h>
-#include <stdlib.h>
 #include <assert.h>
 #include <zlib.h>
 #include "huff_codes.h"
@@ -32,10 +31,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	if (fread(in_buf, 1, in_file_size, in) != in_file_size) {
-		fprintf(stderr, "Failed to read from %s\n", argv[1]);
-		exit(1);
-	}
+	fread(in_buf, 1, in_file_size, in);
 
 	return LLVMFuzzerTestOneInput(in_buf, in_file_size);
 }

@@ -1,5 +1,5 @@
 /* gzguts.h -- zlib internal header definitions for gz* operations
- * Copyright (C) 2004, 2005, 2010, 2011, 2012, 2013, 2016 Mark Adler
+ * Copyright (C) 2004, 2005, 2010, 2011, 2012, 2013 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -103,10 +103,11 @@
 #  endif
 #endif
 
-/* unlike snprintf (which is required in C99), _snprintf does not guarantee
-   null termination of the result -- however this is only used in gzlib.c where
+/* unlike snprintf (which is required in C99, yet still not supported by
+   Microsoft more than a decade later!), _snprintf does not guarantee null
+   termination of the result -- however this is only used in gzlib.c where
    the result is assured to fit in the space provided */
-#if defined(_MSC_VER) && _MSC_VER < 1900
+#ifdef _MSC_VER
 #  define snprintf _snprintf
 #endif
 

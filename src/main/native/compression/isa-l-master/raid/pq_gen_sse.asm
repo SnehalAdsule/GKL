@@ -122,7 +122,7 @@ default rel
 section .text
 
 align 16
-mk_global  pq_gen_sse, function
+global pq_gen_sse:function
 func(pq_gen_sse)
 	FUNC_SAVE
 	sub	vec, 3			;Keep as offset to last source

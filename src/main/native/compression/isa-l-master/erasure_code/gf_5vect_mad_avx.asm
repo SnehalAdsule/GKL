@@ -178,7 +178,7 @@ section .text
 
 
 align 16
-mk_global gf_5vect_mad_avx, function
+global gf_5vect_mad_avx:function
 func(gf_5vect_mad_avx)
 	FUNC_SAVE
 	sub	len, 16

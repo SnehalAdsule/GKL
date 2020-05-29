@@ -185,7 +185,7 @@ section .text
 
 
 align 16
-mk_global gf_6vect_mad_sse, function
+global gf_6vect_mad_sse:function
 func(gf_6vect_mad_sse)
 	FUNC_SAVE
 	sub	len, 16

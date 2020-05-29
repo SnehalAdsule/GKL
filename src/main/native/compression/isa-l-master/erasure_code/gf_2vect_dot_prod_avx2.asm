@@ -248,7 +248,7 @@ section .text
 %endif
 
 align 16
-mk_global gf_2vect_dot_prod_avx2, function
+global gf_2vect_dot_prod_avx2:function
 
 func(gf_2vect_dot_prod_avx2)
 	FUNC_SAVE

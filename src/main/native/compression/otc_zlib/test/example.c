@@ -1,5 +1,5 @@
 /* example.c -- usage example of the zlib compression library
- * Copyright (C) 1995-2006, 2011, 2016 Jean-loup Gailly
+ * Copyright (C) 1995-2006, 2011 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -59,13 +59,13 @@ void *myalloc(q, n, m)
     void *q;
     unsigned n, m;
 {
-    (void)q;
+    q = Z_NULL;
     return calloc(n, m);
 }
 
 void myfree(void *q, void *p)
 {
-    (void)q;
+    q = Z_NULL;
     free(p);
 }
 
@@ -573,8 +573,7 @@ int main(argc, argv)
     }
 
 #ifdef Z_SOLO
-    (void)argc;
-    (void)argv;
+    argc = strlen(argv[0]);
 #else
     test_compress(compr, comprLen, uncompr, uncomprLen);
 

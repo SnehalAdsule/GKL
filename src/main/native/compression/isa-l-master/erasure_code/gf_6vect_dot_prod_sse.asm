@@ -182,7 +182,7 @@ section .text
 %define xp6    xmm13
 
 align 16
-mk_global gf_6vect_dot_prod_sse, function
+global gf_6vect_dot_prod_sse:function
 func(gf_6vect_dot_prod_sse)
 	FUNC_SAVE
 	sub	len, 16

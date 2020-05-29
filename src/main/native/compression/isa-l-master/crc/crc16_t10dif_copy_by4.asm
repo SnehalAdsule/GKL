@@ -69,7 +69,7 @@ section .text
 %endif
 
 align 16
-mk_global 	crc16_t10dif_copy_by4, function
+global	crc16_t10dif_copy_by4:function
 crc16_t10dif_copy_by4:
 
 	; adjust the 16-bit initial_crc value, scale it to 32 bits

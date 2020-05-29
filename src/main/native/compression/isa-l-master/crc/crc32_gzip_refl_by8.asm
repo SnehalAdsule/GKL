@@ -86,7 +86,7 @@ section .text
 %endif
 
 align 16
-mk_global  crc32_gzip_refl_by8, function
+global  crc32_gzip_refl_by8:function
 crc32_gzip_refl_by8:
 
         ; unsigned long c = crc ^ 0xffffffffL;

@@ -56,9 +56,13 @@ extern xor_check_sse
 mbin_interface xor_gen
 mbin_interface pq_gen
 
-
-mbin_dispatch_init6 xor_gen, xor_gen_base, xor_gen_sse, xor_gen_avx, xor_gen_avx, xor_gen_avx512
-mbin_dispatch_init6 pq_gen, pq_gen_base, pq_gen_sse, pq_gen_avx, pq_gen_avx2, pq_gen_avx512
+%ifdef HAVE_AS_KNOWS_AVX512
+ mbin_dispatch_init6 xor_gen, xor_gen_base, xor_gen_sse, xor_gen_avx, xor_gen_avx, xor_gen_avx512
+ mbin_dispatch_init6 pq_gen, pq_gen_base, pq_gen_sse, pq_gen_avx, pq_gen_avx2, pq_gen_avx512
+%else
+ mbin_dispatch_init5 xor_gen, xor_gen_base, xor_gen_sse, xor_gen_avx, xor_gen_avx
+ mbin_dispatch_init5 pq_gen, pq_gen_base, pq_gen_sse, pq_gen_avx, pq_gen_avx2
+%endif
 
 section .data
 
@@ -72,7 +76,7 @@ section .text
 ;;;;
 ; pq_check multibinary function
 ;;;;
-mk_global  pq_check, function
+global pq_check:function
 pq_check_mbinit:
 	call	pq_check_dispatch_init
 pq_check:
@@ -104,7 +108,7 @@ pq_check_dispatch_init:
 ;;;;
 ; xor_check multibinary function
 ;;;;
-mk_global  xor_check, function
+global xor_check:function
 xor_check_mbinit:
 	call    xor_check_dispatch_init
 xor_check:

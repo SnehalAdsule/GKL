@@ -7,6 +7,7 @@
 #include "test.h"
 
 #define DICT_LEN 32*1024
+#define ITERATIONS 100000
 
 extern void isal_deflate_hash(struct isal_zstream *stream, uint8_t * dict, int dict_len);
 
@@ -20,7 +21,7 @@ void create_rand_data(uint8_t * data, uint32_t size)
 
 int main(int argc, char *argv[])
 {
-	int time = BENCHMARK_TIME;
+	int i, iterations = ITERATIONS;
 	struct isal_zstream stream;
 	uint8_t dict[DICT_LEN];
 	uint32_t dict_len = DICT_LEN;
@@ -28,11 +29,16 @@ int main(int argc, char *argv[])
 	stream.level = 0;
 	create_rand_data(dict, dict_len);
 
-	struct perf start;
-	BENCHMARK(&start, time, isal_deflate_hash(&stream, dict, dict_len));
+	struct perf start, stop;
+	perf_start(&start);
 
-	printf("igzip_build_hash_table_perf: in_size=%u ", dict_len);
-	perf_print(start, (long long)dict_len);
+	for (i = 0; i < iterations; i++) {
+		isal_deflate_hash(&stream, dict, dict_len);
+	}
 
-	return 0;
+	perf_stop(&stop);
+
+	printf("igzip_build_hash_table_perf:\n");
+	printf("  in_size=%u iter=%d ", dict_len, i);
+	perf_print(stop, start, (long long)dict_len * i);
 }

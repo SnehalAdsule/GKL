@@ -238,7 +238,7 @@ section .text
 %endif
 
 align 16
-mk_global gf_2vect_dot_prod_sse, function
+global gf_2vect_dot_prod_sse:function
 
 func(gf_2vect_dot_prod_sse)
 	FUNC_SAVE

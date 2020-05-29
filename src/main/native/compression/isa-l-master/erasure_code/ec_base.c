@@ -31,6 +31,7 @@
 #include <string.h>		// for memset
 #include "erasure_code.h"
 #include "ec_base.h"		// for GF tables
+#include "types.h"
 
 void ec_init_tables(int k, int rows, unsigned char *a, unsigned char *g_tbls)
 {
@@ -340,9 +341,9 @@ void gf_vect_mul_base(int len, unsigned char *a, unsigned char *src, unsigned ch
 }
 
 struct slver {
-	unsigned short snum;
-	unsigned char ver;
-	unsigned char core;
+	UINT16 snum;
+	UINT8 ver;
+	UINT8 core;
 };
 
 // Version info

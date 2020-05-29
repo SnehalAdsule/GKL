@@ -123,11 +123,8 @@ default rel
 %define yshuf0	ymm6
 %define yshuf1	ymm7
 
-[bits 64]
-default rel
-section .text
 
-mk_global adler32_avx2_4, function
+global adler32_avx2_4:function
 func(adler32_avx2_4)
 	FUNC_SAVE
 

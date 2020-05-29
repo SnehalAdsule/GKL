@@ -168,7 +168,7 @@ section .text
 %define xd4     xtmpl1
 
 align 16
-mk_global gf_4vect_mad_sse, function
+global gf_4vect_mad_sse:function
 func(gf_4vect_mad_sse)
 	FUNC_SAVE
 	sub	len, 16

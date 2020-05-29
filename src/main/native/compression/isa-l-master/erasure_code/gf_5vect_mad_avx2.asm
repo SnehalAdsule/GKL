@@ -166,7 +166,7 @@ section .text
 %define xd5     ymm9
 
 align 16
-mk_global gf_5vect_mad_avx2, function
+global gf_5vect_mad_avx2:function
 func(gf_5vect_mad_avx2)
 	FUNC_SAVE
 	sub	len, 32

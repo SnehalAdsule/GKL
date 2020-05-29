@@ -202,7 +202,7 @@ section .text
 %define xp     ymm2
 
 align 16
-mk_global gf_vect_dot_prod_avx2, function
+global gf_vect_dot_prod_avx2:function
 func(gf_vect_dot_prod_avx2)
 	FUNC_SAVE
 	SLDR 	len, len_m
