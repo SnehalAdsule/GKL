@@ -90,11 +90,12 @@ JNIEXPORT void JNICALL Java_com_intel_gkl_compression_IntelDeflater_resetNative
     if (lz_stream == 0) {
       lz_stream = (isal_zstream*)malloc(sizeof(isal_zstream));
       if ( lz_stream == NULL ) {
-        jclass Exception = env->FindClass("java/lang/Exception");
-        env->ThrowNew(Exception,"Memory allocation error");
+        if(env->ExceptionCheck())
+            env->ExceptionClear();
+        env->ThrowNew(env->FindClass("java/lang/OutOfMemoryError"),"Memory allocation error");
+        return;
       }
 
-      env->SetLongField(obj, FID_lz_stream, (jlong)lz_stream);
 
        isal_deflate_stateless_init(lz_stream);
 
@@ -102,7 +103,16 @@ JNIEXPORT void JNICALL Java_com_intel_gkl_compression_IntelDeflater_resetNative
     lz_stream->level_buf = (uint8_t*)malloc(ISAL_DEF_LVL2_DEFAULT);
     lz_stream->level_buf_size = ISAL_DEF_LVL2_DEFAULT;
 
+      if (lz_stream->level_buf == NULL) {
+          if(env->ExceptionCheck()) {
+            env->ExceptionClear();
+          }
+          env->ThrowNew(env->FindClass("java/lang/OutOfMemoryError"),"Memory allocation error");
+          free(lz_stream);
+          return;
+      }
 
+      env->SetLongField(obj, FID_lz_stream, (jlong)lz_stream);
     }
     else {
 
@@ -121,8 +131,10 @@ JNIEXPORT void JNICALL Java_com_intel_gkl_compression_IntelDeflater_resetNative
     if (lz_stream == 0) {
       lz_stream = (z_stream*)calloc(1, sizeof(z_stream));
       if ( lz_stream == NULL ) {
-        jclass Exception = env->FindClass("java/lang/Exception");
-        env->ThrowNew(Exception,"Memory allocation error");
+        if(env->ExceptionCheck())
+            env->ExceptionClear();
+        env->ThrowNew(env->FindClass("java/lang/OutOfMemoryError"),"Memory allocation error");
+        return;
       }
       env->SetLongField(obj, FID_lz_stream, (jlong)lz_stream);
       
@@ -133,8 +145,9 @@ JNIEXPORT void JNICALL Java_com_intel_gkl_compression_IntelDeflater_resetNative
                              nowrap ? -MAX_WBITS : MAX_WBITS,
                              DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY);
       if (ret != Z_OK) {
-        jclass Exception = env->FindClass("java/lang/Exception");
-        env->ThrowNew(Exception,"IntelDeflater init error");
+        if(env->ExceptionCheck())
+            env->ExceptionClear();
+        env->ThrowNew(env->FindClass("java/lang/RuntimeException"),"IntelDeflater init error");
       }
     }
     else {
@@ -154,30 +167,44 @@ JNIEXPORT void JNICALL Java_com_intel_gkl_compression_IntelDeflater_resetNative
 
 JNIEXPORT void JNICALL Java_com_intel_gkl_compression_IntelDeflater_generateHuffman
 (JNIEnv * env, jobject obj) {
-
-      jbyteArray inputBuffer = (jbyteArray)env->GetObjectField(obj, FID_inputBuffer);
-
       jint level = env->GetIntField(obj, FID_level);
 
       if(level == 1) {
       isal_zstream* lz_stream = (isal_zstream*)env->GetLongField(obj, FID_lz_stream);
+      if (lz_stream == NULL) {
+        if(env->ExceptionCheck())
+            env->ExceptionClear();
+        env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "lz_stream is NULL.");
+        return;
+      }
 
+      jbyteArray inputBuffer = (jbyteArray)env->GetObjectField(obj, FID_inputBuffer);
       jbyte* input = (jbyte*)env->GetPrimitiveArrayCritical(inputBuffer, 0);
+
+      if (input == NULL) {
+        if (env->ExceptionCheck())
+          env->ExceptionClear();
+        env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "inputBuffer is null.");
+        env->ReleasePrimitiveArrayCritical(inputBuffer, input, 0);
+        return;
+      }
 
       struct isal_huff_histogram *histogram = (struct isal_huff_histogram *) malloc(sizeof(*histogram)); 
       struct isal_hufftables *hufftables_custom;
 
       if (histogram == NULL) {
-           DBG ("Malloc failed out of memory");
-           return; 
-      } 
-      
+        DBG ("Malloc failed out of memory");
+        if(env->ExceptionCheck())
+            env->ExceptionClear();
+        env->ThrowNew(env->FindClass("java/lang/OutOfMemoryError"),"Memory allocation error");
+        return;
+      }
+
       memset(histogram, 0, sizeof(isal_huff_histogram));
       isal_update_histogram((unsigned char*)input, 64*1024, histogram);
       isal_create_hufftables(hufftables_custom, histogram);
       lz_stream->hufftables = hufftables_custom;
 
-      env->SetLongField(obj, FID_lz_stream, (jlong)lz_stream);
       env->ReleasePrimitiveArrayCritical(inputBuffer, input, 0);
       
       free(histogram);
@@ -207,7 +234,22 @@ JNIEXPORT jint JNICALL Java_com_intel_gkl_compression_IntelDeflater_deflateNativ
     isal_zstream stream;
 
     jbyte* next_in = (jbyte*)env->GetPrimitiveArrayCritical(inputBuffer, 0);
+
+    if (next_in == NULL) {
+      if (env->ExceptionCheck())
+        env->ExceptionClear();
+      env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "inputBuffer is null.");
+      return -1;
+    }
+
     jbyte* next_out = (jbyte*)env->GetPrimitiveArrayCritical(outputBuffer, 0);
+    if (next_out == NULL) {
+      if (env->ExceptionCheck())
+        env->ExceptionClear();
+      env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "outputBuffer is null.");
+      env->ReleasePrimitiveArrayCritical(inputBuffer, next_in, 0);
+      return -1;
+    }
 
     lz_stream->next_in = (uint8_t*) (next_in);
     lz_stream->avail_in = inputBufferLength;
@@ -255,8 +297,31 @@ JNIEXPORT jint JNICALL Java_com_intel_gkl_compression_IntelDeflater_deflateNativ
       
     z_stream* lz_stream = (z_stream*)env->GetLongField(obj, FID_lz_stream);
 
+    if (lz_stream == NULL) {
+      if(env->ExceptionCheck())
+          env->ExceptionClear();
+      env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "lz_stream is NULL.");
+      return -1;
+    }
+
     jbyte* next_in = (jbyte*)env->GetPrimitiveArrayCritical(inputBuffer, 0);
+
+    if (next_in == NULL) {
+      if (env->ExceptionCheck())
+        env->ExceptionClear();
+      env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "inputBuffer is null.");
+      return -1;
+    }
+
     jbyte* next_out = (jbyte*)env->GetPrimitiveArrayCritical(outputBuffer, 0);
+
+    if (next_out == NULL) {
+      if (env->ExceptionCheck())
+        env->ExceptionClear();
+      env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "outputBuffer is null.");
+      env->ReleasePrimitiveArrayCritical(inputBuffer, next_in, 0);
+      return -1;
+    }
 
     lz_stream->next_in = (Bytef *) next_in;
     lz_stream->avail_in = (uInt) inputBufferLength;
@@ -306,12 +371,14 @@ Java_com_intel_gkl_compression_IntelDeflater_endNative(JNIEnv *env, jobject obj)
      isal_zstream* lz_stream = (isal_zstream*)env->GetLongField(obj, FID_lz_stream);
       free(lz_stream->level_buf);
       free(lz_stream);
+      env->SetLongField(obj, FID_lz_stream, 0);
 
    }
   else {
     z_stream* lz_stream = (z_stream*)env->GetLongField(obj, FID_lz_stream);
     deflateEnd(lz_stream);
     free(lz_stream);
+    env->SetLongField(obj, FID_lz_stream, 0);
   }
 
 

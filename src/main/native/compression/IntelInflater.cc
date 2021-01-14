@@ -78,8 +78,10 @@ JNIEXPORT void JNICALL Java_com_intel_gkl_compression_IntelInflater_resetNative
 
      lz_stream = (inflate_state*)calloc(1,sizeof(inflate_state));
       if ( lz_stream == NULL ) {
-        jclass Exception = env->FindClass("java/lang/Exception");
-        env->ThrowNew(Exception,"Memory allocation error");
+        if(env->ExceptionCheck())
+            env->ExceptionClear();
+        env->ThrowNew(env->FindClass("java/lang/OutOfMemoryError"),"Memory allocation error");
+        return;
       }
       env->SetLongField(obj, FID_inf_lz_stream, (jlong)lz_stream);
 
@@ -101,6 +103,12 @@ JNIEXPORT jint JNICALL Java_com_intel_gkl_compression_IntelInflater_inflateNativ
 
 
    inflate_state* lz_stream = (inflate_state*)env->GetLongField(obj, FID_inf_lz_stream);
+   if (lz_stream == NULL) {
+     if (env->ExceptionCheck())
+       env->ExceptionClear();
+     env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "lz_stream is NULL.");
+     return 0;
+   }
 
     jbyteArray inputBuffer = (jbyteArray)env->GetObjectField(obj, FID_inf_inputBuffer);
       jint inputBufferLength = env->GetIntField(obj, FID_inf_inputBufferLength);
@@ -108,7 +116,23 @@ JNIEXPORT jint JNICALL Java_com_intel_gkl_compression_IntelInflater_inflateNativ
 
 
         jbyte* next_in = (jbyte*)env->GetPrimitiveArrayCritical(inputBuffer, 0);
+
+        if (next_in == NULL) {
+          if (env->ExceptionCheck())
+            env->ExceptionClear();
+          env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "inputBuffer is null.");
+          return -1;
+        }
+
         jbyte* next_out = (jbyte*)env->GetPrimitiveArrayCritical(outputBuffer, 0);
+
+        if (next_out == NULL) {
+          if (env->ExceptionCheck())
+            env->ExceptionClear();
+          env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "outputBuffer is null.");
+          env->ReleasePrimitiveArrayCritical(inputBuffer, next_in, 0);
+          return -1;
+        }
 
 
         lz_stream->next_in = (Bytef *) (next_in + inputBufferOffset);
@@ -168,5 +192,5 @@ Java_com_intel_gkl_compression_IntelInflater_endNative(JNIEnv *env, jobject obj)
 
   inflate_state* lz_stream = (inflate_state*)env->GetLongField(obj, FID_inf_lz_stream);
   free(lz_stream);
-
+  env->SetLongField(obj, FID_inf_lz_stream, 0);
 }
