@@ -82,15 +82,15 @@ public class IntelPairHmm implements PairHMMNativeBinding {
             int availThreads = gklUtils.getAvailableOmpThreads();
             int maxThreads = Math.min(reqThreads, availThreads);
 
-            logger.info(String.format("Available threads: %d", availThreads));
-            logger.info(String.format("Requested threads: %d", reqThreads));
+            logger.info("Available threads: " + availThreads);
+            logger.info("Requested threads: " + reqThreads);
             if (reqThreads > availThreads) {
-                logger.warn(String.format("Using %d available threads, but %d were requested", maxThreads, reqThreads));
+                logger.warn("Using " + maxThreads + " available threads, but " + reqThreads + " were requested");
             }
         }
         else {
             if (reqThreads != 1) {
-                logger.warn(String.format("Ignoring request for %d threads; not using OpenMP implementation", reqThreads));
+                logger.warn("Ignoring request for " + reqThreads + " threads; not using OpenMP implementation");
             }
         }
     }
