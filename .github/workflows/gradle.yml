@@ -13,9 +13,16 @@ jobs:
   build:
 
     runs-on: centos:latest
-
+    
     steps:
+    # Important: This sets up your GITHUB_WORKSPACE environment variable
     - uses: actions/checkout@v2
+
+    - name: ansible check with centos:latest
+      # replace "master" with any valid ref
+      uses: roles-ansible/check-ansible-centos-latest-action@master
+      with:
+        targets: "./"
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
