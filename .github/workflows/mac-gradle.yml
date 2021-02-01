@@ -24,9 +24,9 @@ jobs:
     - name: Build tools
       run : brew install git autoconf automake libtool libtool yasm nasm zlib cmake
     - name: Check tools
-      run : | 
-         brew list
-         ld -v
+      run : brew list
+    - name: Check ld 
+      run : ld -v
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
