@@ -1,7 +1,8 @@
-- name: Copy build script local to remote machine
-   hosts: remote_machine
+- name : centos
+   hosts: all
    tasks:
-    - name: Copy script to remote_machine
-      template: src=build.sh dest=~/script.sh mode=755
-    - name: Execute script on remote_machine
-      script: sh ~/script.sh
+      - name: Copy 
+      copy:
+        src: build.sh
+        dest: /tmp/build.sh
+        shell : "bahs /tmp/build.sh"
