@@ -22,5 +22,6 @@ jobs:
       # replace "master" with any valid ref
       uses: roles-ansible/check-ansible-centos-latest-action@master
       with:
-          entrypoint: " bash /home/runner/work/GKL/GKL/build.sh"
+        add: build.sh /
+        entrypoint: "bash /build.sh"
       
