@@ -1,8 +1,3 @@
-- name : centos
-   hosts: all
-   tasks:
-      - name: Copy 
-      copy:
-        src: build.sh
-        dest: /tmp/build.sh
-        shell : "bahs /tmp/build.sh"
+--- 
+name: build
+shell: "bash build.sh  >> somelog.txt"
