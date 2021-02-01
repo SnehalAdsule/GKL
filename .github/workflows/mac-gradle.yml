@@ -21,6 +21,8 @@ jobs:
         java-version: 1.8
     - name: Install gcc
       run : brew install gcc && gcc --version
+    - name: Install gcc
+      run : brew install autoconf automake libtool
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
