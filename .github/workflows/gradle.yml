@@ -22,6 +22,5 @@ jobs:
       # replace "master" with any valid ref
       uses: roles-ansible/check-ansible-centos-latest-action@master
       with:
-        targets: "."
-        cmd: build.sh
+          playbook: centos.yml
       
