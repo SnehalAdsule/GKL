@@ -22,5 +22,5 @@ jobs:
       # replace "master" with any valid ref
       uses: roles-ansible/check-ansible-centos-latest-action@master
       with:
-          playbook: centos.yml
+          shell: " bash /home/runner/work/GKL/GKL/build.sh"
       
