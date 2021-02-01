@@ -22,7 +22,7 @@ jobs:
     - name: Install gcc
       run : brew install gcc r
     - name: Other tools
-      run : brew install git autoconf automake libtool libtool yasm nasm zlib-devel
+      run : brew install git autoconf automake libtool libtool yasm nasm zlib
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
