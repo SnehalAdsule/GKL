@@ -1,3 +1,26 @@
+/**
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016-2021 Intel Corporation
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #include<stdio.h>
 #include "smithwaterman_common.h"
 
@@ -238,7 +261,7 @@ void inline smithWatermanBackTrack(SeqPair *p, int32_t match, int32_t mismatch, 
     return;
 }
 
-void inline getCIGAR(SeqPair *p, int16_t *cigarBuf_, int32_t tid)
+void inline getCIGAR(SeqPair *p, int16_t *cigarBuf_, int32_t cigarBufLength, int32_t tid)
 {
     int16_t *btrack = p->btrack;
     int32_t max_i = p->max_i;
@@ -333,7 +356,7 @@ void inline getCIGAR(SeqPair *p, int16_t *cigarBuf_, int32_t tid)
     if(overhangStrategy == SOFTCLIP)
     {
         if(j > 0)
-        {
+        {   
             cigarArray[cigarId * 2] = SOFTCLIP;
             cigarArray[cigarId * 2 + 1] = j;
             cigarId++;
@@ -351,7 +374,7 @@ void inline getCIGAR(SeqPair *p, int16_t *cigarBuf_, int32_t tid)
         p->alignmentOffset = i - j;
     }
     else // overhangStrategy == INDEL || overhangStrategy == LEADING_INDEL
-    {
+    {   
         if (i > 0)
         {
             cigarArray[cigarId * 2] = DELETE;
@@ -386,7 +409,6 @@ void inline getCIGAR(SeqPair *p, int16_t *cigarBuf_, int32_t tid)
 
     }
 
-    int maxSize = max(p->len1, p->len2);
     int curSize = 0;
     for(i = newId; i >= 0; i--)
     {
@@ -410,20 +432,20 @@ void inline getCIGAR(SeqPair *p, int16_t *cigarBuf_, int32_t tid)
                 state = 'R';
                 break;
         }
-	// expectedLength for converting int to str w/ extra padding for '\0'
-	int expectedLength = snprintf( NULL, 0, "%d%c", cigarArray[2 * i + 1], state);
-	if (curSize >= 0 && expectedLength > 1 && (curSize < maxSize - expectedLength ))
-           {
-                   curSize += snprintf(p->cigar + curSize, expectedLength + 1, "%d%c", cigarArray[2 * i + 1], state);
-           }
+        int expectedLength = fast_itoa(NULL, cigarArray[2 * i + 1]) + 1;
+
+        if (curSize >= 0 && expectedLength > 1 && curSize + expectedLength <= cigarBufLength){ 
+            curSize += fast_itoa(p->cigar + curSize, cigarArray[2 * i + 1]);
+            p->cigar[curSize++] = state;
+
+        }
     }
     p->cigarCount = strnlen(p->cigar, curSize);
 }
 
 
-int32_t CONCAT(runSWOnePairBT_,SIMD_ENGINE)(int32_t match, int32_t mismatch, int32_t open, int32_t extend,uint8_t *seq1, uint8_t *seq2, int32_t len1, int32_t len2, int8_t overhangStrategy, char *cigarArray, int16_t *cigarCount, int32_t *offset)
+int32_t CONCAT(runSWOnePairBT_,SIMD_ENGINE)(int32_t match, int32_t mismatch, int32_t open, int32_t extend,uint8_t *seq1, uint8_t *seq2, int32_t len1, int32_t len2, int8_t overhangStrategy, char *cigarArray, int32_t cigarLen, int16_t *cigarCount, int32_t *offset)
 {
-
     int32_t  w_match = match;
     int32_t  w_mismatch = mismatch;
     int32_t  w_open = open;
@@ -459,7 +481,7 @@ int32_t CONCAT(runSWOnePairBT_,SIMD_ENGINE)(int32_t match, int32_t mismatch, int
     p.cigar = cigarArray;
 
     smithWatermanBackTrack(&p, match, mismatch,  open, extend, E_, 0);
-    getCIGAR(&p, cigarBuf_, 0);
+    getCIGAR(&p, cigarBuf_, cigarLen, 0);
     (*cigarCount) = p.cigarCount;
 
     _mm_free(E_);
